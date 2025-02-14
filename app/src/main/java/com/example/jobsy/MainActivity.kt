@@ -22,6 +22,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +36,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+val supabase = createSupabaseClient(
+    supabaseUrl = "https://yppchvnkdaetfspsvnid.supabase.co",
+    supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwcGNodm5rZGFldGZzcHN2bmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg4OTY3ODUsImV4cCI6MjA1NDQ3Mjc4NX0.Y6ed8aZKAepo3ZA5t6TuLGAYKerOgzHFeul2hp263UU"
+) {
+    install(Postgrest)
+}
+val auth = supabase.auth
 
 @Composable
 fun AuthNavigation() {
@@ -65,7 +78,12 @@ fun LoginScreen(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /* Логика входа */ },
+            onClick = {
+                /*val result = supabase.auth.signInWith(Email) {
+                    email = ""
+                    password = ""
+                }*/
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Войти")
@@ -110,7 +128,15 @@ fun RegisterScreen(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /* Логика регистрации */ },
+            onClick = {
+                TODO("Registration logic")
+                /* if (password == confirmPassword) {
+                    val user = supabase.auth.signUpWith(Email) {
+                        email = ""
+                        password = ""
+                    }
+                } */
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Зарегистрироваться")
