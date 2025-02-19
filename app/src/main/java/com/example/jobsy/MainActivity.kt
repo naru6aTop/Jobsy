@@ -30,6 +30,7 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.realtime.Realtime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
     ) {
         install(Auth)
         install(Postgrest)
+        install(Realtime)
     }
     private val authRepository by lazy { AuthRepository(supabase) }
     private val authViewModel by lazy { AuthViewModel(authRepository) }
@@ -48,7 +50,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AuthNavigation(authViewModel)
+            AuthNavigation(authViewModel, supabase)
         }
     }
 }

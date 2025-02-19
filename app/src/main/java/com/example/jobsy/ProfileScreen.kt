@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -61,7 +62,7 @@ fun ProfileScreen(navController: NavController) {
 
             // Имя пользователя
             Text(
-                text = "Иван Петров",
+                text = "naru6aTop",
                 style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
             )
 
@@ -69,8 +70,18 @@ fun ProfileScreen(navController: NavController) {
 
             // Рейтинг пользователя
             Text(
-                text = "Рейтинг: ★ 4.8",
+                text = "Рейтинг: ★ " + "4.8",
                 style = TextStyle(fontSize = 16.sp, color = Color.Gray)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Описание пользователя
+            Text(
+                text = "Опытный фрилансер, занимаюсь разработкой компьютерных игр.",
+                style = TextStyle(fontSize = 14.sp, color = Color.DarkGray),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(16.dp))

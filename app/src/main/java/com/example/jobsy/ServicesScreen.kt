@@ -1,19 +1,17 @@
 package com.example.jobsy
 
+import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -21,30 +19,44 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil3.compose.rememberAsyncImagePainter
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 // Данные для постов
 data class ServicePost(val id: Int, val username: String, val text: String, val imageResId: Int?)
 
-// Список примерных постов
-val sampleServices = listOf(
-    ServicePost(1, "Алексей", "Нужен дизайн логотипа для стартапа.", R.drawable.default_cover),
-    ServicePost(2, "Мария", "Ищу программиста для мобильного приложения.", R.drawable.default_cover),
-    ServicePost(3, "Иван", "Need a repair of television.", null)
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServiceScreen(navController: NavController) {
+fun ServicesScreen(navController: NavController, supabase: SupabaseClient) {
+    var services by remember { mutableStateOf<List<Service>>(emptyList()) }
     var searchQuery by remember { mutableStateOf("") }
-    val filteredAds = sampleServices.filter { it.text.contains(searchQuery, ignoreCase = true) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            try {
+                services = supabase.from("services")
+                    .select()
+                    .decodeList<Service>()
+            } catch (e: Exception) {
+                Log.e("Supabase", "Ошибка загрузки данных: ${e.message}")
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Объявления") },
+                title = { Text("Заказы") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -56,11 +68,8 @@ fun ServiceScreen(navController: NavController) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate("add_service") },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Добавить объявление")
+            FloatingActionButton(onClick = { /* Логика добавления поста */ }) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Добавить заказ")
             }
         }
     ) { paddingValues ->
@@ -70,19 +79,17 @@ fun ServiceScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // Поле поиска
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Поиск объявлений...") }
+                label = { Text("Поиск") },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Список заказов
             LazyColumn {
-                items(filteredAds) { service ->
+                items(services.filter { it.title.contains(searchQuery, ignoreCase = true) }) { service ->
                     ServiceItem(service)
                 }
             }
@@ -90,56 +97,69 @@ fun ServiceScreen(navController: NavController) {
     }
 }
 
-// Компонент одного поста
+// Модель данных для объявления
+@Serializable
+data class Service(
+    val id: Int,
+    val user_id: Int,
+    val title: String,
+    val description: String,
+    val price: Float,
+    val category_id: Int?,
+    val image_url: String?,
+    val created_at: String
+)
+
+// Отображение одного поста
 @Composable
-fun ServiceItem(service: ServicePost) {
+fun ServiceItem(service: Service) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable { /* Открыть детали заказа */ },
+            .padding(vertical = 4.dp)
+            .clickable { /* Переход в детали */ },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column {
-            // Изображение заказа (если нет — плейсхолдер)
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Заголовок и дата создания
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(service.title, style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
+                Text(
+                    service.created_at,
+                    style = TextStyle(fontSize = 12.sp, color = Color.Gray),
+                    textAlign = TextAlign.End
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Описание и цена
+            Text(service.description, fontSize = 14.sp, color = Color.Gray)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Цена: ${service.price} ₽", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Картинка с fallback на дефолтную
             Image(
-                painter = painterResource(id = service.imageResId ?: R.drawable.default_cover),
-                contentDescription = "service Image",
+                painter = if (service.image_url.isNullOrEmpty()) {
+                    painterResource(id = R.drawable.default_cover)
+                } else {
+                    rememberAsyncImagePainter(service.image_url)
+                },
+                contentDescription = "Service Image",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp),
+                    .height(150.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Аватарка (заглушка)
-                Image(
-                    painter = painterResource(id = R.drawable.default_pfp),
-                    contentDescription = "Avatar",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Gray)
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                // Текстовая часть
-                Column {
-                    Text(
-                        text = service.username,
-                        style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = service.text, fontSize = 14.sp)
-                }
-            }
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
