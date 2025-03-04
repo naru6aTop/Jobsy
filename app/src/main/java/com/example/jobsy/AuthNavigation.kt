@@ -16,6 +16,27 @@ fun AuthNavigation(authViewModel: AuthViewModel, supabase: SupabaseClient) {
         composable("home") { HomeScreen(navController, userName = "naru6aTop", avatarResId = R.drawable.default_pfp) }
         composable("ads") { ServicesScreen(navController, supabase) }
         composable("orders") { OrdersScreen(navController) }
-        composable("profile") { ProfileScreen(navController) }
+        composable("profile/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull()
+            if (userId != null) {
+                ProfileScreen(
+                    userId = userId,
+                    navController = navController,
+                    supabase = supabase,
+                    currentUserId = 1
+                )
+            }
+        }
+        composable("addService") { AddServiceScreen(navController, supabase) } // Новый маршрут
+        composable("serviceDetail/{serviceId}") { backStackEntry ->
+            val serviceId = backStackEntry.arguments?.getString("serviceId")?.toIntOrNull()
+            if (serviceId != null) {
+                PostScreen(
+                    serviceId = serviceId,
+                    navController = navController,
+                    supabase = supabase
+                )
+            }
+        }
     }
 }

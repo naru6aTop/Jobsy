@@ -31,9 +31,11 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.storage.Storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class MainActivity : ComponentActivity() {
     private val supabase = createSupabaseClient(
@@ -43,6 +45,9 @@ class MainActivity : ComponentActivity() {
         install(Auth)
         install(Postgrest)
         install(Realtime)
+        install(Storage){
+            transferTimeout = 30.seconds
+        }
     }
     private val authRepository by lazy { AuthRepository(supabase) }
     private val authViewModel by lazy { AuthViewModel(authRepository) }

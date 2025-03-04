@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
@@ -56,7 +58,7 @@ fun ServicesScreen(navController: NavController, supabase: SupabaseClient) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Заказы") },
+                title = { Text("Объявления") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -68,8 +70,8 @@ fun ServicesScreen(navController: NavController, supabase: SupabaseClient) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { /* Логика добавления поста */ }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Добавить заказ")
+            FloatingActionButton(onClick = { navController.navigate("addService") }) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Добавить объявление")
             }
         }
     ) { paddingValues ->
@@ -90,7 +92,9 @@ fun ServicesScreen(navController: NavController, supabase: SupabaseClient) {
 
             LazyColumn {
                 items(services.filter { it.title.contains(searchQuery, ignoreCase = true) }) { service ->
-                    ServiceItem(service)
+                    ServiceItem(service = service, onClick = {
+                        navController.navigate("serviceDetail/${service.id}")
+                    })
                 }
             }
         }
@@ -98,26 +102,17 @@ fun ServicesScreen(navController: NavController, supabase: SupabaseClient) {
 }
 
 // Модель данных для объявления
-@Serializable
-data class Service(
-    val id: Int,
-    val user_id: Int,
-    val title: String,
-    val description: String,
-    val price: Float,
-    val category_id: Int?,
-    val image_url: String?,
-    val created_at: String
-)
+
 
 // Отображение одного поста
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ServiceItem(service: Service) {
+fun ServiceItem(service: Service, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { /* Переход в детали */ },
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -144,13 +139,8 @@ fun ServiceItem(service: Service) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Картинка с fallback на дефолтную
-            Image(
-                painter = if (service.image_url.isNullOrEmpty()) {
-                    painterResource(id = R.drawable.default_cover)
-                } else {
-                    rememberAsyncImagePainter(service.image_url)
-                },
+            GlideImage(
+                model = service.image_url ?: R.drawable.default_cover,
                 contentDescription = "Service Image",
                 modifier = Modifier
                     .fillMaxWidth()

@@ -5,6 +5,8 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.storage.Storage
+import kotlin.time.Duration.Companion.seconds
 
 object AppModule {
     lateinit var supabase: SupabaseClient
@@ -17,6 +19,9 @@ object AppModule {
         ) {
             install(Postgrest)
             install(Auth)
+            install(Storage){
+                transferTimeout = 30.seconds
+            }
         }
     }
 }

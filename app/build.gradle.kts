@@ -50,6 +50,9 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:realtime-kt")
     implementation("io.ktor:ktor-client-android:3.0.0-rc-1")
     implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("io.github.jan-tennert.supabase:storage-kt:3.1.2")
+
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
