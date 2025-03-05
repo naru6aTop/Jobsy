@@ -36,7 +36,8 @@ fun ProfileScreen(
     userId: Int, // ID пользователя, чей профиль открыт
     navController: NavController,
     supabase: SupabaseClient,
-    currentUserId: Int? // ID текущего пользователя (если null, то это чужой профиль)
+    currentUserId: Int?,
+    authViewModel: AuthViewModel// ID текущего пользователя (если null, то это чужой профиль)
 ) {
     var user by remember { mutableStateOf<User?>(null) }
     val coroutineScope = rememberCoroutineScope()
@@ -126,13 +127,14 @@ fun ProfileScreen(
                     ProfileOption(text = "Новости") { navController.navigate("news") }
                     ProfileOption(text = "О сервисе") { navController.navigate("about") }
                     ProfileOption(text = "Задать вопрос") { navController.navigate("ask_question") }
-                    ProfileOption(text = "Настройки профиля") { navController.navigate("profile_settings") }
+                    ProfileOption(text = "Настройки профиля") { navController.navigate("editProfile") }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Кнопка выхода
                     Button(
-                        onClick = { /* Логика выхода из аккаунта */ },
+                        onClick = { authViewModel.logout()
+                            navController.navigate("login") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                     ) {
                         Text("Выйти из аккаунта", color = Color.White)

@@ -9,13 +9,18 @@ import io.github.jan.supabase.SupabaseClient
 @Composable
 fun AuthNavigation(authViewModel: AuthViewModel, supabase: SupabaseClient) {
     val navController = rememberNavController()
+    val currentUserId = authViewModel.currentUserId
 
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "login") {
         composable("login") { LoginScreen(navController, authViewModel) }
         composable("register") { RegisterScreen(navController, authViewModel) }
-        composable("home") { HomeScreen(navController, userName = "naru6aTop", avatarResId = R.drawable.default_pfp) }
-        composable("ads") { ServicesScreen(navController, supabase) }
-        composable("orders") { OrdersScreen(navController) }
+        composable("home") {
+            HomeScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                supabase = supabase
+            )
+        }
         composable("profile/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull()
             if (userId != null) {
@@ -23,11 +28,12 @@ fun AuthNavigation(authViewModel: AuthViewModel, supabase: SupabaseClient) {
                     userId = userId,
                     navController = navController,
                     supabase = supabase,
-                    currentUserId = 1
+                    currentUserId = authViewModel.currentUserId,
+                    authViewModel = authViewModel
                 )
             }
         }
-        composable("addService") { AddServiceScreen(navController, supabase) } // Новый маршрут
+        composable("addService") { AddServiceScreen(navController, supabase, authViewModel) } // Новый маршрут
         composable("serviceDetail/{serviceId}") { backStackEntry ->
             val serviceId = backStackEntry.arguments?.getString("serviceId")?.toIntOrNull()
             if (serviceId != null) {
@@ -37,6 +43,13 @@ fun AuthNavigation(authViewModel: AuthViewModel, supabase: SupabaseClient) {
                     supabase = supabase
                 )
             }
+        }
+        composable("editProfile") {
+            EditProfileScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                supabase = supabase
+            )
         }
     }
 }

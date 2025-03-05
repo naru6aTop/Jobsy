@@ -34,7 +34,7 @@ class AuthRepository(private val supabase: SupabaseClient) {
                 Log.d("Auth", user.toString())
 
                 if (user != null) {
-                    val result = BCrypt.verifyer().verify(password.toCharArray(), user.password_hash)
+                    val result = BCrypt.verifyer().verify(password.toCharArray(), user.password)
                     return@withContext result.verified
                 } else {
                     return@withContext false

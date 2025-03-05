@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
         }
     }
     private val authRepository by lazy { AuthRepository(supabase) }
-    private val authViewModel by lazy { AuthViewModel(authRepository) }
+    private val authViewModel by lazy { AuthViewModel(supabase) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

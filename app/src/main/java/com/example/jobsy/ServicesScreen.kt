@@ -58,15 +58,7 @@ fun ServicesScreen(navController: NavController, supabase: SupabaseClient) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Объявления") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Назад"
-                        )
-                    }
-                }
+                title = { Text("Исполнители") }
             )
         },
         floatingActionButton = {

@@ -26,7 +26,8 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddServiceScreen(navController: NavController, supabase: SupabaseClient) {
+fun AddServiceScreen(navController: NavController, supabase: SupabaseClient, authViewModel: AuthViewModel) {
+    val currentUserId = authViewModel.currentUserId
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
@@ -143,7 +144,7 @@ fun AddServiceScreen(navController: NavController, supabase: SupabaseClient) {
                                 // Создание нового объявления
                                 val newService = Service(
                                     id = 0, // ID будет сгенерирован автоматически
-                                    user_id = 1, // Замените на ID текущего пользователя
+                                    user_id = currentUserId, // Замените на ID текущего пользователя
                                     title = title,
                                     description = description,
                                     content = content,

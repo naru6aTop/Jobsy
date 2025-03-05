@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,7 +28,7 @@ import androidx.navigation.NavController
 fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val authState = authViewModel.authState
+    val authState = authViewModel.authState.collectAsState()
 
     Column(modifier = Modifier.padding(16.dp).fillMaxSize()) {
         Text("Вход", style = MaterialTheme.typography.headlineLarge)
@@ -41,13 +42,13 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
             Text("Войти")
         }
 
-        when (authState) {
+        when (val state = authState.value) {
             is AuthState.Loading -> CircularProgressIndicator()
             is AuthState.Success -> {
                 Text("Вход выполнен!", color = MaterialTheme.colorScheme.primary)
                 LaunchedEffect(Unit) { navController.navigate("home") }
             }
-            is AuthState.Error -> Text(authState.message, color = MaterialTheme.colorScheme.error)
+            is AuthState.Error -> Text(state.message, color = MaterialTheme.colorScheme.error)
             else -> {}
         }
 
