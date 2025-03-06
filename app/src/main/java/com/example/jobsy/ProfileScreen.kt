@@ -142,7 +142,7 @@ fun ProfileScreen(
                 } else {
                     // Кнопки для чужого профиля
                     Button(
-                        onClick = { /* Логика отправки сообщения */ },
+                        onClick = { navController.navigate("chat/${user!!.id}") },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Написать сообщение")

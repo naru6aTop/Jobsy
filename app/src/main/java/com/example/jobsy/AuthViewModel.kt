@@ -31,7 +31,6 @@ class AuthViewModel(private val supabase: SupabaseClient) : ViewModel() {
     var currentUserAvatarUrl: String? = null // URL аватарки текущего пользователя
     var currentUserBio: String? = null
 
-
     fun register(email: String, password: String, name: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
@@ -185,6 +184,109 @@ class AuthViewModel(private val supabase: SupabaseClient) : ViewModel() {
             }
         } catch (e: Exception) {
             Log.e("Supabase", "Ошибка при загрузке данных пользователя: ${e.message}")
+        }
+    }
+
+    // Отправка сообщения
+    fun sendMessage(receiverId: Int, message: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                supabase.from("messages")
+                    .insert(
+                        Message(
+                            sender_id = currentUserId,
+                            receiver_id = receiverId,
+                            message = message
+                        )
+                    )
+                onSuccess()
+            } catch (e: Exception) {
+                onError("Ошибка при отправке сообщения: ${e.message}")
+            }
+        }
+    }
+
+    // Получение списка пользователей, с которыми есть переписка
+    fun getChatUsers(onSuccess: (List<User>) -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val userId = currentUserId
+                if (userId != null) {
+                    // Получаем всех пользователей, с которыми есть переписка
+                    val users = supabase.from("messages")
+                        .select {
+                            filter {
+                                or {
+                                    eq("sender_id", userId)
+                                    eq("receiver_id", userId)
+                                }
+                            }
+                        }
+                        .decodeList<Message>()
+                        .mapNotNull { message ->
+                            if (message.sender_id == userId) {
+                                supabase.from("users")
+                                    .select {
+                                        filter {
+                                            eq("id", message.receiver_id)
+                                        }
+                                    }
+                                    .decodeSingleOrNull<User>()
+                            } else {
+                                supabase.from("users")
+                                    .select {
+                                        filter {
+                                            eq("id", message.sender_id)
+                                        }
+                                    }
+                                    .decodeSingleOrNull <User>()
+                            }
+                        }
+                        .distinctBy { it.id }
+
+                    onSuccess(users)
+                }
+            } catch (e: Exception) {
+                onError("Ошибка при загрузке пользователей: ${e.message}")
+            }
+        }
+    }
+
+    fun getMessages(
+        userId: Int, // ID пользователя, с которым ведется переписка
+        onSuccess: (List<Message>) -> Unit, // Колбэк при успешной загрузке
+        onError: (String) -> Unit // Колбэк при ошибке
+    ) {
+        viewModelScope.launch {
+            try {
+                val currentUserId = currentUserId
+                if (currentUserId != null) {
+                    // Получаем сообщения между текущим пользователем и выбранным пользователем
+                    val messages = supabase.from("messages")
+                        .select {
+                            filter {
+                                or {
+                                    and {
+                                        eq("sender_id", currentUserId)
+                                        eq("receiver_id", userId)
+                                        }
+                                    and {
+                                        eq("sender_id", userId)
+                                        eq("receiver_id", currentUserId)
+                                    }
+                                }
+                            }
+                            order("created_at", order = Order.ASCENDING) // Сортируем по времени отправки
+                        }
+                        .decodeList<Message>()
+
+                    onSuccess(messages)
+                } else {
+                    onError("Пользователь не авторизован")
+                }
+            } catch (e: Exception) {
+                onError("Ошибка при загрузке сообщений: ${e.message}")
+            }
         }
     }
 }

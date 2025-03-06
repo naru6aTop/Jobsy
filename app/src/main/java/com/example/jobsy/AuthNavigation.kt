@@ -51,5 +51,15 @@ fun AuthNavigation(authViewModel: AuthViewModel, supabase: SupabaseClient) {
                 supabase = supabase
             )
         }
+        composable("chat/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull()
+            if (userId != null) {
+                ChatScreen(
+                    userId = userId,
+                    navController = navController,
+                    authViewModel = authViewModel
+                )
+            }
+        }
     }
 }

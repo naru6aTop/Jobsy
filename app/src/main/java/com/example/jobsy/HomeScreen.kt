@@ -126,7 +126,7 @@ fun HomeScreen(
             when (selectedScreen) {
                 "ads" -> ServicesScreen(navController, supabase)
                 "orders" -> OrdersScreen(navController)
-                "messenger" -> MessengerScreen(navController)
+                "messenger" -> MessengerScreen(navController, authViewModel)
             }
         }
     }
