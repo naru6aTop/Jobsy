@@ -64,7 +64,6 @@ fun AuthNavigation(authViewModel: AuthViewModel, supabase: SupabaseClient) {
             if (userId != null) {
                 ChatScreen(
                     userId = userId,
-                    navController = navController,
                     authViewModel = authViewModel
                 )
             }
