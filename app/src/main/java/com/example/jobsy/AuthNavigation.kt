@@ -4,6 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.jobsy.screens.AddServiceScreen
+import com.example.jobsy.screens.ChatScreen
+import com.example.jobsy.screens.EditProfileScreen
+import com.example.jobsy.screens.HomeScreen
+import com.example.jobsy.screens.LoginScreen
+import com.example.jobsy.screens.PostScreen
+import com.example.jobsy.screens.ProfileScreen
+import com.example.jobsy.screens.RegisterScreen
 import io.github.jan.supabase.SupabaseClient
 
 @Composable

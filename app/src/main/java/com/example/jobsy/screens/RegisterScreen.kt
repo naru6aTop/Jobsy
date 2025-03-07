@@ -1,4 +1,4 @@
-package com.example.jobsy
+package com.example.jobsy.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.jobsy.AuthState
+import com.example.jobsy.AuthViewModel
 
 @Composable
 fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {

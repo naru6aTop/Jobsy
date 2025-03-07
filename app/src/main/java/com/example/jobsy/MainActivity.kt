@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
             transferTimeout = 30.seconds
         }
     }
-    private val authRepository by lazy { AuthRepository(supabase) }
     private val authViewModel by lazy { AuthViewModel(supabase) }
 
     override fun onCreate(savedInstanceState: Bundle?) {

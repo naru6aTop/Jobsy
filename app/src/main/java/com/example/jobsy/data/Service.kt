@@ -1,4 +1,4 @@
-package com.example.jobsy
+package com.example.jobsy.data
 
 import kotlinx.serialization.Serializable
 

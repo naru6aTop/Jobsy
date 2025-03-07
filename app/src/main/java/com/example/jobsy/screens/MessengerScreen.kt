@@ -1,4 +1,4 @@
-package com.example.jobsy
+package com.example.jobsy.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -32,6 +32,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.sp
+import com.example.jobsy.AuthViewModel
+import com.example.jobsy.R
+import com.example.jobsy.data.User
 
 @Composable
 fun MessengerScreen(

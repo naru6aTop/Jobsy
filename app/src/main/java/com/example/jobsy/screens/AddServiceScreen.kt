@@ -1,4 +1,4 @@
-package com.example.jobsy
+package com.example.jobsy.screens
 
 import android.net.Uri
 import android.util.Log
@@ -17,6 +17,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.jobsy.AuthViewModel
+import com.example.jobsy.data.Service
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
